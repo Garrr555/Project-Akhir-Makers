@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { addOrUpdateRecord } from "@/features/tickets/ticketsSlice";
 import { Input } from "@/components/ui/input";
@@ -15,16 +15,11 @@ import {
   Loader,
   Loader2,
   Search,
+  Pencil,
+  Check,
 } from "lucide-react";
 import { format } from "date-fns";
 import FilmList from "../molecules/FilmList";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "../ui/select";
 import { toast } from "sonner";
 
 export interface FilmApi {
@@ -43,8 +38,28 @@ export default function InputPanel() {
   const [loading, setLoading] = useState(false);
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
   const [ticketCount, setTicketCount] = useState(1);
-  const [htm, setHtm] = useState(50000);
+
+  // Harga dapat diubah
+  const [hargaSeninKamis, setHargaSeninKamis] = useState(30000);
+  const [hargaJumatSabtu, setHargaJumatSabtu] = useState(50000);
+  const [hargaMinggu, setHargaMinggu] = useState(40000);
+  const [editing, setEditing] = useState(false);
+
+  const [htm, setHtm] = useState(30000);
+
   const apikey = import.meta.env.VITE_API_KEY;
+
+  // Tentukan HTM otomatis berdasarkan tanggal yang dipilih
+  useEffect(() => {
+    const day = selectedDate.getDay(); // 0 = Minggu, 6 = Sabtu
+    if (day === 0) {
+      setHtm(hargaMinggu);
+    } else if (day === 5 || day === 6) {
+      setHtm(hargaJumatSabtu);
+    } else {
+      setHtm(hargaSeninKamis);
+    }
+  }, [selectedDate, hargaSeninKamis, hargaJumatSabtu, hargaMinggu]);
 
   const handleSearch = async () => {
     if (!search) return;
@@ -72,22 +87,20 @@ export default function InputPanel() {
       total: ticketCount * htm,
     };
     dispatch(addOrUpdateRecord(record));
-
     toast.success("Tiket berhasil ditambahkan");
-    setSelectedFilm(null); // reset
-    setFilms([]); // reset hasil pencarian
+
+    setSelectedFilm(null);
+    setFilms([]);
     setSearch("");
   };
 
   const cancelFilm = () => {
-    setSelectedFilm(null); // reset
+    setSelectedFilm(null);
     toast.success("Film diganti");
   };
 
-  console.log("Film terpilih", selectedFilm);
-
   return (
-    <div className="p-4 bg-white/70 h-[90vh] rounded-2xl shadow-lg space-y-4">
+    <div className="p-4 bg-white/70 border-2 border-slate-200 rounded-2xl shadow-lg space-y-4 max-h-[90vh]">
       {/* Input Search */}
       <div className="flex items-center gap-2">
         <Input
@@ -95,7 +108,11 @@ export default function InputPanel() {
           value={search}
           onChange={(e) => setSearch(e.target.value)}
         />
-        <Button onClick={handleSearch} disabled={loading} className="w-1/12 bg-gradient-to-br from-green-500 via-green-400 to-green-200">
+        <Button
+          onClick={handleSearch}
+          disabled={loading}
+          className="w-1/12 bg-gradient-to-br from-green-500 via-green-400 to-green-200"
+        >
           {loading ? (
             <Loader2 className="w-4 h-4 animate-spin" />
           ) : (
@@ -103,9 +120,9 @@ export default function InputPanel() {
           )}
         </Button>
       </div>
-
-      {films.length === 0 && (
-        <div className="flex flex-col gap-2 items-center justify-center font-bold h-[80vh] [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+      {/* Jika belum memilih film */}
+      {films.length === 0 && !selectedFilm && (
+        <div className="flex flex-col gap-2 items-center justify-center font-bold h-[80vh] [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] overflow-auto">
           {loading ? (
             <div>
               <Loader className="mx-auto w-20 h-20 animate-spin" />
@@ -129,9 +146,11 @@ export default function InputPanel() {
 
       {/* Form Input Tiket */}
       {selectedFilm && (
-        <div className=" border-t pt-4 flex flex-col gap-1 justify-between">
+        <div className="border-t pt-4 flex flex-col gap-2 max-h-[80vh] [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] overflow-auto">
           <div className="flex flex-col justify-center items-center gap-2">
-            <h2 className="font-bold text-xl">{selectedFilm.Title} ({selectedFilm.Type} - {selectedFilm.Year})</h2>
+            <h2 className="font-bold text-xl">
+              {selectedFilm.Title} ({selectedFilm.Type} - {selectedFilm.Year})
+            </h2>
             <img
               src={
                 selectedFilm.Poster !== "N/A"
@@ -147,7 +166,7 @@ export default function InputPanel() {
           <div className="flex items-center gap-3">
             <label className="w-24">Jumlah</label>
             <Input
-              type="text"
+              type="number"
               min={1}
               value={ticketCount}
               onChange={(e) => setTicketCount(Number(e.target.value))}
@@ -179,29 +198,98 @@ export default function InputPanel() {
             </Popover>
           </div>
 
-          {/* HTM */}
+          {/* HTM (otomatis) */}
           <div className="flex items-center gap-3">
             <label className="w-24">HTM</label>
-            <Select
-              value={String(htm)}
-              onValueChange={(val) => setHtm(Number(val))}
-            >
-              <SelectTrigger className="w-[200px] bg-white">
-                <SelectValue placeholder="Pilih harga" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="30000">Rp 30.000 (Senin - Kamis)</SelectItem>
-                <SelectItem value="50000">Rp 50.000 (Jumat - Sabtu)</SelectItem>
-                <SelectItem value="40000">Rp 40.000 (Minggu)</SelectItem>
-              </SelectContent>
-            </Select>
+            <Input
+              value={`Rp ${htm.toLocaleString()}`}
+              readOnly
+              className="w-[200px] bg-gray-100"
+            />
           </div>
 
-          <div className="flex justify-between">
-            <Button variant="outline" onClick={cancelFilm} className="bg-gradient-to-tr from-blue-300 to-blue-500 text-white">
+          {/* Tabel Edit HTM */}
+          <div className="border rounded-xl p-3 bg-white shadow-sm">
+            <div className="flex justify-between items-center mb-2">
+              <h3 className="font-bold">Tabel Harga Tiket</h3>
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={() => setEditing(!editing)}
+                className="flex gap-2"
+              >
+                {editing ? (
+                  <Check className="w-4 h-4" />
+                ) : (
+                  <Pencil className="w-4 h-4" />
+                )}
+                {editing ? "Selesai" : "Edit"}
+              </Button>
+            </div>
+
+            <div className="flex flex-col gap-2">
+              <div className="flex justify-between">
+                <span>Senin - Kamis:</span>
+                {editing ? (
+                  <Input
+                    type="number"
+                    value={hargaSeninKamis}
+                    onChange={(e) => setHargaSeninKamis(Number(e.target.value))}
+                    className="w-32"
+                  />
+                ) : (
+                  <span className="font-semibold">
+                    Rp {hargaSeninKamis.toLocaleString()}
+                  </span>
+                )}
+              </div>
+              <div className="flex justify-between">
+                <span>Jumat - Sabtu:</span>
+                {editing ? (
+                  <Input
+                    type="number"
+                    value={hargaJumatSabtu}
+                    onChange={(e) => setHargaJumatSabtu(Number(e.target.value))}
+                    className="w-32"
+                  />
+                ) : (
+                  <span className="font-semibold">
+                    Rp {hargaJumatSabtu.toLocaleString()}
+                  </span>
+                )}
+              </div>
+              <div className="flex justify-between">
+                <span>Minggu:</span>
+                {editing ? (
+                  <Input
+                    type="number"
+                    value={hargaMinggu}
+                    onChange={(e) => setHargaMinggu(Number(e.target.value))}
+                    className="w-32"
+                  />
+                ) : (
+                  <span className="font-semibold">
+                    Rp {hargaMinggu.toLocaleString()}
+                  </span>
+                )}
+              </div>
+            </div>
+          </div>
+
+          <div className="flex justify-between mt-2">
+            <Button
+              variant="outline"
+              onClick={cancelFilm}
+              className="bg-gradient-to-tr from-blue-300 to-blue-500 text-white"
+            >
               Ganti Film
             </Button>
-            <Button onClick={handleAddTicket} className="bg-gradient-to-tr from-green-300 to-green-500">Tambah Tiket</Button>
+            <Button
+              onClick={handleAddTicket}
+              className="bg-gradient-to-tr from-green-300 to-green-500"
+            >
+              Tambah Tiket
+            </Button>
           </div>
         </div>
       )}
