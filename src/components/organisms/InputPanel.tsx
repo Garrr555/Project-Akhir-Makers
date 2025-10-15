@@ -9,7 +9,13 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
-import { CalendarIcon, Loader2 } from "lucide-react";
+import {
+  CalendarIcon,
+  Clapperboard,
+  Loader,
+  Loader2,
+  Search,
+} from "lucide-react";
 import { format } from "date-fns";
 import FilmList from "../molecules/FilmList";
 import {
@@ -38,13 +44,14 @@ export default function InputPanel() {
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
   const [ticketCount, setTicketCount] = useState(1);
   const [htm, setHtm] = useState(50000);
+  const apikey = import.meta.env.VITE_API_KEY;
 
   const handleSearch = async () => {
     if (!search) return;
     setLoading(true);
     try {
       const res = await fetch(
-        `https://www.omdbapi.com/?s=${search}&apikey=d592fe1a`
+        `https://www.omdbapi.com/?s=${search}&apikey=${apikey}`
       );
       const data = await res.json();
       setFilms(data.Search || []);
@@ -65,6 +72,7 @@ export default function InputPanel() {
       total: ticketCount * htm,
     };
     dispatch(addOrUpdateRecord(record));
+
     toast.success("Tiket berhasil ditambahkan");
     setSelectedFilm(null); // reset
     setFilms([]); // reset hasil pencarian
@@ -76,8 +84,10 @@ export default function InputPanel() {
     toast.success("Film diganti");
   };
 
+  console.log("Film terpilih", selectedFilm);
+
   return (
-    <div className="p-4 bg-white rounded-2xl shadow-lg space-y-4">
+    <div className="p-4 bg-white/70 h-[90vh] rounded-2xl shadow-lg space-y-4">
       {/* Input Search */}
       <div className="flex items-center gap-2">
         <Input
@@ -85,30 +95,63 @@ export default function InputPanel() {
           value={search}
           onChange={(e) => setSearch(e.target.value)}
         />
-        <Button onClick={handleSearch} disabled={loading}>
-          {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : "Cari"}
+        <Button onClick={handleSearch} disabled={loading} className="w-1/12 bg-gradient-to-br from-green-500 via-green-400 to-green-200">
+          {loading ? (
+            <Loader2 className="w-4 h-4 animate-spin" />
+          ) : (
+            <Search className="w-10 h-10" />
+          )}
         </Button>
       </div>
 
+      {films.length === 0 && (
+        <div className="flex flex-col gap-2 items-center justify-center font-bold h-[80vh] [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+          {loading ? (
+            <div>
+              <Loader className="mx-auto w-20 h-20 animate-spin" />
+              <p className="text-xl">Tunggu ya</p>
+            </div>
+          ) : (
+            <div>
+              <Clapperboard className="w-20 h-20 mx-auto" />
+              <p className="text-xl">Silahkan Cari Film</p>
+            </div>
+          )}
+        </div>
+      )}
+
       {/* Hasil Pencarian */}
       {!selectedFilm && films.length > 0 && (
-        <FilmList films={films} onSelect={setSelectedFilm} />
+        <div className="h-[80vh] [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] overflow-auto">
+          <FilmList films={films} onSelect={setSelectedFilm} />
+        </div>
       )}
 
       {/* Form Input Tiket */}
       {selectedFilm && (
-        <div className="space-y-4 border-t pt-4">
-          <h2 className="font-semibold text-lg">{selectedFilm.Title}</h2>
+        <div className=" border-t pt-4 flex flex-col gap-1 justify-between">
+          <div className="flex flex-col justify-center items-center gap-2">
+            <h2 className="font-bold text-xl">{selectedFilm.Title} ({selectedFilm.Type} - {selectedFilm.Year})</h2>
+            <img
+              src={
+                selectedFilm.Poster !== "N/A"
+                  ? selectedFilm.Poster
+                  : "/no-poster.png"
+              }
+              alt={selectedFilm.Title}
+              className="w-60 h-76 object-cover rounded-md border-2 shadow-xl"
+            />
+          </div>
 
           {/* Jumlah Tiket */}
           <div className="flex items-center gap-3">
             <label className="w-24">Jumlah</label>
             <Input
-              type="number"
+              type="text"
               min={1}
               value={ticketCount}
               onChange={(e) => setTicketCount(Number(e.target.value))}
-              className="w-32"
+              className="w-32 bg-white"
             />
           </div>
 
@@ -143,7 +186,7 @@ export default function InputPanel() {
               value={String(htm)}
               onValueChange={(val) => setHtm(Number(val))}
             >
-              <SelectTrigger className="w-[200px]">
+              <SelectTrigger className="w-[200px] bg-white">
                 <SelectValue placeholder="Pilih harga" />
               </SelectTrigger>
               <SelectContent>
@@ -155,10 +198,10 @@ export default function InputPanel() {
           </div>
 
           <div className="flex justify-between">
-            <Button variant="outline" onClick={cancelFilm}>
+            <Button variant="outline" onClick={cancelFilm} className="bg-gradient-to-tr from-blue-300 to-blue-500 text-white">
               Ganti Film
             </Button>
-            <Button onClick={handleAddTicket}>Tambah Tiket</Button>
+            <Button onClick={handleAddTicket} className="bg-gradient-to-tr from-green-300 to-green-500">Tambah Tiket</Button>
           </div>
         </div>
       )}

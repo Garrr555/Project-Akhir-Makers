@@ -8,7 +8,6 @@ import { Toaster } from "sonner";
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
-    {/* Provider wajib membungkus seluruh aplikasi */}
     <Provider store={store}>
       <App />
       <Toaster position="bottom-right" richColors />

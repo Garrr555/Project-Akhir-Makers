@@ -11,23 +11,25 @@ export default function HistoricalList() {
   console.log(records);
 
   return (
-    <div>
+    <div className="h-full overflow-hidden">
       {totalTickets !== 0 ? (
-        <div className="p-4">
-          {records.map((r, i) => (
-            <div key={i} className=" py-2">
-              <HistoricalItem record={r} />
-            </div>
-          ))}
-          <div>
+        <div className="h-full flex flex-col justify-between gap-2">
+          <div className="h-5/6 border bg-white/70 overflow-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] rounded-xl">
+            {records.map((r, i) => (
+              <div key={i} className=" p-2 ">
+                <HistoricalItem record={r} />
+              </div>
+            ))}
+          </div>
+          <div className=" bg-white p-2 border rounded-lg shadow-md">
             <h1 className="font-bold">Ringkasan Harian</h1>
             <p>Total Tiket Terjual: {totalTickets}</p>
             <p>Total Pendapatan: Rp. {totalRevenue.toLocaleString("id-ID")}</p>
           </div>
         </div>
       ) : (
-        <div className="p-4 text-center">
-          <p className="font-bold text-3xl">Tidak ada data</p>
+        <div className="p-4 flex items-center justify-center h-full bg-white/70 rounded-xl">
+          <p className="font-bold text-3xl">Tidak ada Tiket</p>
         </div>
       )}
     </div>

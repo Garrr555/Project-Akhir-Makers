@@ -36,6 +36,7 @@ const ticketsSlice = createSlice({
 
       localStorage.setItem("tickets", JSON.stringify(state.records));
     },
+
     removeRecord: (
       state,
       action: PayloadAction<{ title: string; date: string }>
