@@ -109,6 +109,7 @@ export default function InputPanel() {
           onChange={(e) => setSearch(e.target.value)}
         />
         <Button
+        size={"lg"}
           onClick={handleSearch}
           disabled={loading}
           className="w-1/12 bg-gradient-to-br from-green-500 via-green-400 to-green-200"
@@ -131,7 +132,7 @@ export default function InputPanel() {
           ) : (
             <div>
               <Clapperboard className="w-20 h-20 mx-auto" />
-              <p className="text-xl">Silahkan Cari Film</p>
+              <p className="text-xl">Cari Film Yuk</p>
             </div>
           )}
         </div>
@@ -166,7 +167,7 @@ export default function InputPanel() {
           <div className="flex items-center gap-3">
             <label className="w-24">Jumlah</label>
             <Input
-              type="number"
+              type="text"
               min={1}
               value={ticketCount}
               onChange={(e) => setTicketCount(Number(e.target.value))}

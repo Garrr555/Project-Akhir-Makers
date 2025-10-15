@@ -28,8 +28,16 @@ export default function HistoricalList() {
           </div>
         </div>
       ) : (
-        <div className="p-4 flex items-center justify-center h-full bg-white/70 rounded-xl">
-          <p className="font-bold text-3xl">Tidak ada Tiket</p>
+        <div className=" flex flex-col justify-between h-full bg-white/70 rounded-xl">
+          <div className="h-1/6 flex items-center justify-start px-5">
+            <img src="logo2.svg" alt="" />
+            <p className="font-bold text-4xl">ovie</p>
+          </div>
+          <div className="h-5/6 flex items-center justify-center">
+            <p className="font-bold text-3xl text-center">
+              Gk Ada <br /> Tiket Nih
+            </p>
+          </div>
         </div>
       )}
     </div>

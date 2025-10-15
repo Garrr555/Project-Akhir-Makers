@@ -1,8 +1,4 @@
-import {
-  Card,
-  CardHeader,
-  CardContent,
-} from "@/components/ui/card";
+import { Card, CardHeader, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useDispatch } from "react-redux";
 import { removeRecord } from "@/features/tickets/ticketsSlice";
@@ -48,10 +44,18 @@ export default function HistoricalItem({ record }: { record: TicketRecord }) {
     <Card className=" hover:shadow-lg transition-all">
       <CardHeader>
         <div className="flex justify-between items-center">
-          <h3 className="text-lg font-medium">{formattedDate}</h3>
+          <div className="flex items-center gap-2">
+            <div className="bg-gradient-to-br from-orange-500 to-orange-200 rounded-full py-3 px-2">
+              <img src="/logo3.svg" alt="" className="w-5 " />
+            </div>
+            <h3 className="text-lg font-medium">{formattedDate}</h3>
+          </div>
           <AlertDialog>
             <AlertDialogTrigger asChild>
-              <Button size="lg" className="bg-gradient-to-tl from-red-300 to-red-600">
+              <Button
+                size="lg"
+                className="bg-gradient-to-tl from-red-300 to-red-600"
+              >
                 <Trash2 />
               </Button>
             </AlertDialogTrigger>
