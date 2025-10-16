@@ -8,8 +8,6 @@ export default function HistoricalList() {
   const totalTickets = records.reduce((acc, cur) => acc + cur.count, 0);
   const totalRevenue = records.reduce((acc, cur) => acc + cur.total, 0);
 
-  console.log(records);
-
   return (
     <div className="h-full overflow-hidden">
       {totalTickets !== 0 ? (

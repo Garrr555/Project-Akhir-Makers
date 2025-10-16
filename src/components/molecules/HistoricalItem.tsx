@@ -32,8 +32,6 @@ export default function HistoricalItem({ record }: { record: TicketRecord }) {
     toast.success(`Tiket ${record.title} berhasil dihapus`);
   };
 
-  console.log("record", record);
-
   const formattedDate = new Intl.DateTimeFormat("en-GB", {
     day: "2-digit",
     month: "short",
