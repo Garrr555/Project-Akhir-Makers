@@ -17,6 +17,7 @@ import {
   Search,
   Pencil,
   Check,
+  VideoOff,
 } from "lucide-react";
 import { format } from "date-fns";
 import { toast } from "sonner";
@@ -159,8 +160,8 @@ export default function InputPanel() {
               </div>
             ) : (
               <>
-                <Clapperboard className="w-20 h-20 mx-auto text-gray-400" />
-                <p className="text-xl text-gray-600">Film tidak ditemukan 😢</p>
+                <VideoOff className="w-20 h-20 mx-auto text-gray-400" />
+                <p className="text-xl text-gray-600">Film gk ketemu nih 😢</p>
               </>
             )
           ) : (
@@ -183,7 +184,7 @@ export default function InputPanel() {
               src={
                 selectedFilm.Poster !== "N/A"
                   ? selectedFilm.Poster
-                  : "/no-poster.png"
+                  : `/video.jpg`
               }
               alt={selectedFilm.Title}
               className="w-60 h-76 object-cover rounded-md border-2 shadow-xl"

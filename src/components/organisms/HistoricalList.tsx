@@ -12,7 +12,7 @@ export default function HistoricalList() {
     <div className="h-full overflow-hidden">
       {totalTickets !== 0 ? (
         <div className="h-full flex flex-col justify-between gap-2">
-          <div className="h-5/6 border bg-white/70 overflow-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] rounded-xl">
+          <div className="lg:h-5/6 h-[500px] border bg-white/70 overflow-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] rounded-xl">
             {records.map((r, i) => (
               <div key={i} className=" p-2 ">
                 <HistoricalItem record={r} />

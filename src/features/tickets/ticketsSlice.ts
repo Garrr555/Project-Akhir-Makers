@@ -19,7 +19,7 @@ const initialState: TicketState = {
 
 const ticketsSlice = createSlice({
   name: "tickets",
-  initialState,
+  initialState: initialState,
   reducers: {
     addOrUpdateRecord: (state, action: PayloadAction<TicketRecord>) => {
       const newRecord = action.payload;

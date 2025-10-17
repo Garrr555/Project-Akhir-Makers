@@ -19,7 +19,7 @@ export default function FilmCard({ film, setSelectedFilm }: FilmCardProps) {
       </div>
       <div className="flex justify-center items-center max-h-5/6">
         <img
-          src={film.Poster !== "N/A" ? film.Poster : "/no-poster.png"}
+          src={film.Poster !== "N/A" ? film.Poster : `/video.jpg`}
           alt={film.Title}
           className="w-60 h-76 object-cover rounded-md"
         />
